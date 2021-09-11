@@ -1,6 +1,7 @@
 import * as algosdk from "algosdk"
 import * as config from "./config/algoConfig.js"
 import * as IPFS from "ipfs"
+import {Social_Post} from "./SocialTypes.js"
 
 export default {
     data: {
@@ -62,24 +63,31 @@ export default {
          * Uplaods a post to IPFS and submits the link 
          * to the Algorand Blockchain as an NFT
          */
-        createPost: async function()
+        createPost: async function(post)
         {
 
-            const data = 'Dylan test data'
+            if(post instanceof Social_Post)
+            {
+                //const data = 'Dylan test data'
 
-            // add your data to to IPFS - this can be a string, a Buffer,
-            // a stream of Buffers, etc
-            const results = this.ipfsClient.addAll(data)
+                // add your data to to IPFS - this can be a string, a Buffer,
+                // a stream of Buffers, etc
+                const results = this.ipfsClient.addAll(JSON.stringify(post))
 
-        
-            // we loop over the results because 'add' supports multiple 
-            // additions, but we only added one entry here so we only see
-            // one log line in the output
-            for await (const { cid } of results) {
-                // CID (Content IDentifier) uniquely addresses the data
-                // and can be used to get it again.
-                console.log(cid.toString())
+            
+                // we loop over the results because 'add' supports multiple 
+                // additions, but we only added one entry here so we only see
+                // one log line in the output
+                for await (const { cid } of results) {
+                    // CID (Content IDentifier) uniquely addresses the data
+                    // and can be used to get it again.
+                    console.log(cid.toString())
+
+                    //TODO: Store on algorand
+                }
+                return true;
             }
+            return false;
         }
     }
 };

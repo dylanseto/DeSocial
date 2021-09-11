@@ -29,8 +29,12 @@
           <v-flex xs12 md4 v-if="isLoaded" >
             <div class="pl-4">
               <div class="pl-16">
-                <div class="pl-16 white--text" style="width: 700px;">
+                <v-form ref="form" 
+                        v-model="form" 
+                        class="pl-16 white--text" 
+                        style="width: 700px;">
                   <v-textarea
+                  v-model="social_post_textarea"
                   label="What's on your mind?"
                   counter="400"
                   auto-grow
@@ -39,7 +43,7 @@
                 <div class="pt-5">
                   <v-btn @click="onPost()">POST</v-btn>
                 </div>
-               </div>
+               </v-form>
               </div>
             </div>
             <Post v-for="index in 10" :key="index"></Post>
@@ -75,6 +79,7 @@
 import Post from "@/components/Post"
 import Sidebar from "@/components/Sidebar"
 import algoSocial from "@/js/AlgoSocial.js"
+import { Social_Post} from "@/js/SocialTypes.js"
 
 export default {
   components: {
@@ -94,7 +99,11 @@ export default {
     },
     onPost: function()
     {
-      this.createPost();
+      var social_post = new Social_Post("John", this.social_post_textarea);
+      this.createPost(social_post);
+
+      //Clear Text area.
+      this.$refs.form.reset();
     }
   }
 };
