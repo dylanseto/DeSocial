@@ -1,9 +1,11 @@
 import * as algosdk from "algosdk"
 import * as config from "./config/algoConfig.js"
+import * as IPFS from "ipfs"
 
 export default {
     data: {
-        algodClient: null
+        algodClient: null,
+        ipfsClient: null
     },
     methods: {
         /**
@@ -17,10 +19,10 @@ export default {
             return false;
         },
         /**
-         * Attempts to connect to the Algorand Network.
+         * Attempts to connect to the Algorand and IPFS Networks.
          * @returns True if successful. False Otherwise.
          */
-        connectToAlgo: async function()
+        initializeClient: async function()
         {
             var res = false;
             if(!this.isAlgoSignerInstalled())
@@ -50,6 +52,10 @@ export default {
                   console.error(e);
                   res = false; 
                 });
+
+            // Creae an IPFS node
+            this.ipfsClient = await IPFS.create();
+
             return res;
         },
         /**
@@ -58,6 +64,22 @@ export default {
          */
         createPost: async function()
         {
+
+            const data = 'Dylan test data'
+
+            // add your data to to IPFS - this can be a string, a Buffer,
+            // a stream of Buffers, etc
+            const results = this.ipfsClient.addAll(data)
+
+        
+            // we loop over the results because 'add' supports multiple 
+            // additions, but we only added one entry here so we only see
+            // one log line in the output
+            for await (const { cid } of results) {
+                // CID (Content IDentifier) uniquely addresses the data
+                // and can be used to get it again.
+                console.log(cid.toString())
+            }
         }
     }
 };

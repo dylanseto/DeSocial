@@ -37,7 +37,7 @@
                   dark
                 ></v-textarea>
                 <div class="pt-5">
-                  <v-btn>POST</v-btn>
+                  <v-btn @click="onPost()">POST</v-btn>
                 </div>
                </div>
               </div>
@@ -90,7 +90,11 @@ export default {
     handleClick: async function()
     {
       this.isLoaded = false;
-      this.isLoaded = await this.connectToAlgo();
+      this.isLoaded = await this.initializeClient();
+    },
+    onPost: function()
+    {
+      this.createPost();
     }
   }
 };
