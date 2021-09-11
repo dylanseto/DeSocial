@@ -63,9 +63,10 @@ export default {
          * Uplaods a post to IPFS and submits the link 
          * to the Algorand Blockchain as an NFT
          */
-        createPost: async function(post)
+        createPost: async function(name, text)
         {
-
+            var post = new Social_Post(name, text);
+            
             if(post instanceof Social_Post)
             {
                 //const data = 'Dylan test data'

@@ -79,7 +79,6 @@
 import Post from "@/components/Post"
 import Sidebar from "@/components/Sidebar"
 import algoSocial from "@/js/AlgoSocial.js"
-import { Social_Post} from "@/js/SocialTypes.js"
 
 export default {
   components: {
@@ -99,9 +98,12 @@ export default {
     },
     onPost: function()
     {
-      var social_post = new Social_Post("John", this.social_post_textarea);
-      this.createPost(social_post);
+      var result = this.createPost("John", this.social_post_textarea);
 
+      if(!result)
+      {
+        //show error
+      }
       //Clear Text area.
       this.$refs.form.reset();
     }
