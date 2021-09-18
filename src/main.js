@@ -3,7 +3,7 @@ import vuetify from './plugins/vuetify';
 import App from './App.vue';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@mdi/font/css/materialdesignicons.css';
-import * as router from './router';
+import router from './router';
 
 Vue.config.productionTip = false;
 

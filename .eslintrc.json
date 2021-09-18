@@ -19,5 +19,6 @@
         "vue"
     ],
     "rules": {
+        "vue/script-setup-uses-vars": "off"
     }
 }

@@ -12,7 +12,7 @@
             <div class="pl-16 pt-4">
               <div class="pl-10">
                 <v-btn
-                    class="rounded-xl white" 
+                    class="rounded-xl white"
                     width="100"
                     @click="handleClick()">Load App</v-btn>
                 <p class="text--red">Error</p>
@@ -29,9 +29,9 @@
           <v-flex xs12 md4 v-if="isLoaded" >
             <div class="pl-4">
               <div class="pl-16">
-                <v-form ref="form" 
-                        v-model="form" 
-                        class="pl-16 white--text" 
+                <v-form ref="form"
+                        v-model="form"
+                        class="pl-16 white--text"
                         style="width: 700px;">
                   <v-textarea
                   v-model="social_post_textarea"
@@ -50,17 +50,19 @@
           </v-flex>
           <v-flex xs12 md4 v-else>
                   <v-container class="mt-1 rounded-xl black" >
-          <v-banner elevation="24" 
-                    width="500" 
-                    height="170" 
-                    class="rounded-xl white" 
-                    flat 
+          <v-banner elevation="24"
+                    width="500"
+                    height="170"
+                    class="rounded-xl white"
+                    flat
                     outlined>
-                  <span outlined>Algosigner Chrome Extension is required to run this application.</span>
+                  <span outlined>
+                    Algosigner Chrome Extension is required to run this application.
+                  </span>
                   <p></p>
                   <p></p>
                   <p></p>
-                  <p>It can be installed 
+                  <p>It can be installed
                     <a href="https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm">
                     here
                     </a>
@@ -76,37 +78,34 @@
 
 <script>
 
-import Post from "@/components/Post"
-import Sidebar from "@/components/Sidebar"
-import algoSocial from "@/js/AlgoSocial.js"
+import Post from '../components/Post.vue';
+import Sidebar from '../components/Sidebar.vue';
+import algoSocial from '../js/AlgoSocial';
 
 export default {
   components: {
     Post,
-    Sidebar
+    Sidebar,
   },
-  mixins: [ algoSocial ],
+  mixins: [algoSocial],
   data: () => ({
     isLoaded: false,
     isInstalled: false,
   }),
   methods: {
-    handleClick: async function()
-    {
+    async handleClick() {
       this.isLoaded = false;
       this.isLoaded = await this.initializeClient();
     },
-    onPost: function()
-    {
-      var result = this.createPost("John", this.social_post_textarea);
+    onPost() {
+      const result = this.createPost('John', this.social_post_textarea);
 
-      if(!result)
-      {
-        //show error
+      if (!result) {
+        // show error
       }
-      //Clear Text area.
+      // Clear Text area.
       this.$refs.form.reset();
-    }
-  }
+    },
+  },
 };
 </script>
