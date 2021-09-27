@@ -82,9 +82,6 @@ export default {
         // CID (Content Identifier) uniquely addresses the data
         // and can be used to get it again.
         const cid = next.value.path;
-        console.log(cid);
-
-        // TODO: Store on algorand
 
         // The Create Post Smart Contract has three transactions
         // In a single atomic transfer:
@@ -100,8 +97,6 @@ export default {
           createPostAppID,
           createPostAppTxnargs,
         );
-
-        console.log(JSON.stringify(createPostAppTxn));
 
         const escrowParams = await this.algodClient.getTransactionParams().do();
         const escrowAccountArgs = [];
@@ -132,10 +127,6 @@ export default {
           metadata, // Metadata
           escrowParams, // Parameters
         );
-
-        console.log('lsig');
-        console.log(lsigAddress.address());
-
         // Group both transactions
         const group = [createPostAppTxn, createPostTxn];
         algosdk.assignGroupID(group);
@@ -145,9 +136,6 @@ export default {
         const signedTx1 = await window.AlgoSigner.signTxn([{ txn: txnB64 }]);
         const signedTx1Converted = window.AlgoSigner.encoding.base64ToMsgpack(signedTx1[0].blob);
         const signedTx2 = algosdk.signLogicSigTransactionObject(createPostTxn, lsigAddress);
-
-        console.log('tx');
-        console.log(JSON.stringify(signedTx1));
 
         await this.algodClient.sendRawTransaction([signedTx1Converted, signedTx2.blob]).do();
         // 2. Transfer Post
