@@ -1,10 +1,10 @@
 <template>
       <v-container class="mt-1 rounded-xl black" >
-      <v-banner elevation="24" 
-                width="700" 
-                height="200" 
-                class="rounded-xl white" 
-                flat 
+      <v-banner elevation="24"
+                width="700"
+                height="200"
+                class="rounded-xl white"
+                flat
                 outlined>
                 <div>
                     <v-avatar>
@@ -19,8 +19,8 @@
               <span outlined>This is an example post.</span>
             <v-bottom-navigation class="elevation-0 mt-8" color="primary">
                 <span class="mt-5 red--text">
-                  10h 10m 50s Left 
-                </span> 
+                  10h 10m 50s Left
+                </span>
                 <v-btn elevation="0">
                   <span flat>Add Time</span>
                   <v-icon>mdi-plus</v-icon>

@@ -74,8 +74,6 @@ export default {
         const results = await this.ipfsClient.addAll(JSON.stringify(post));
 
         let next = await results.next();
-        const params = await this.algodClient.getTransactionParams().do();
-        console.log(JSON.stringify(params));
 
         // we loop over the results because 'add' supports multiple
         // additions, but we only added one entry here so we only see
@@ -91,16 +89,21 @@ export default {
         // The Create Post Smart Contract has three transactions
         // In a single atomic transfer:
         // 1. Create Post
+        const createPostAppTxnParams = await this.algodClient.getTransactionParams().do();
+
         const createPostAppTxnargs = [];
         createPostAppTxnargs.push(new Uint8Array(Buffer.from('create_post')));
         const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
         const createPostAppTxn = await algosdk.makeApplicationNoOpTxn(
           addressBook[0].address,
-          params,
+          createPostAppTxnParams,
           createPostAppID,
           createPostAppTxnargs,
         );
 
+        console.log(JSON.stringify(createPostAppTxn));
+
+        const escrowParams = await this.algodClient.getTransactionParams().do();
         const escrowAccountArgs = [];
         escrowAccountArgs.push(algosdk.encodeUint64(1));
         escrowAccountArgs.push(algosdk.encodeUint64(1));
@@ -111,9 +114,7 @@ export default {
           escrowAccountArgs,
         );
 
-        console.log(JSON.stringify(JSON.stringify(escrowAccountArgs)));
-
-        const url = `https://ipfs.io/ipfs/, ${cid.toString()}`;
+        const url = `https://ipfs.io/ipfs/${cid.toString()}`;
         const metadata = new Uint8Array(cid);
         const createPostTxn = await algosdk.makeAssetCreateTxnWithSuggestedParams(
           lsigAddress.address(), // Sender
@@ -125,12 +126,15 @@ export default {
           lsigAddress.address(), // Reserve
           lsigAddress.address(), // Freeze
           lsigAddress.address(), // Clawback
-          'Post', // Unit Name
-          'Post', // Asset Name
+          'asa_post', // Unit Name
+          'asa_post', // Asset Name
           url, // Asset URL
           metadata, // Metadata
-          params, // Parameters
+          escrowParams, // Parameters
         );
+
+        console.log('lsig');
+        console.log(lsigAddress.address());
 
         // Group both transactions
         const group = [createPostAppTxn, createPostTxn];
@@ -141,6 +145,9 @@ export default {
         const signedTx1 = await window.AlgoSigner.signTxn([{ txn: txnB64 }]);
         const signedTx1Converted = window.AlgoSigner.encoding.base64ToMsgpack(signedTx1[0].blob);
         const signedTx2 = algosdk.signLogicSigTransactionObject(createPostTxn, lsigAddress);
+
+        console.log('tx');
+        console.log(JSON.stringify(signedTx1));
 
         await this.algodClient.sendRawTransaction([signedTx1Converted, signedTx2.blob]).do();
         // 2. Transfer Post

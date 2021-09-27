@@ -12,28 +12,33 @@
         </div>
 
         <v-btn class="mt-10" color="black" elevation="24">
-          <v-icon size="50" :class="{'white--text': !hover_over_home, 'grey--text': hover_over_home}"
+          <v-icon size="50" :class="{'white--text':
+                                !hover_over_home, 'grey--text': hover_over_home}"
                             @mouseover="hover_over_home = true"
                             @mouseleave="hover_over_home = false">mdi-home-circle</v-icon>
         </v-btn>
         <v-btn class="mt-8" color="black">
-          <v-icon size="50" :class="{'white--text': !hover_over_account, 'grey--text': hover_over_account}"
+          <v-icon size="50" :class="{'white--text':
+                              !hover_over_account, 'grey--text': hover_over_account}"
                             @mouseover="hover_over_account = true"
                             @mouseleave="hover_over_account = false">mdi-account-circle</v-icon>
         </v-btn>
 
           <v-btn class="mt-10" color="black">
-            <v-icon size="50" :class="{'white--text': !hover_over_bell, 'grey--text': hover_over_bell}"
+            <v-icon size="50" :class="{'white--text':
+                              !hover_over_bell, 'grey--text': hover_over_bell}"
                             @mouseover="hover_over_bell = true"
                             @mouseleave="hover_over_bell = false">mdi-bell-circle</v-icon>
           </v-btn>
           <v-btn class="mt-10" color="black">
-            <v-icon size="50" :class="{'white--text': !hover_over_email, 'grey--text': hover_over_email}"
+            <v-icon size="50" :class="{'white--text':
+                              !hover_over_email, 'grey--text': hover_over_email}"
                             @mouseover="hover_over_email = true"
                             @mouseleave="hover_over_email = false">mdi-email</v-icon>
           </v-btn>
           <v-btn class="mt-10" color="black">
-            <v-icon size="50" :class="{'white--text': !hover_over_more, 'grey--text': hover_over_more}"
+            <v-icon size="50" :class="{'white--text':
+                              !hover_over_more, 'grey--text': hover_over_more}"
                             @mouseover="hover_over_more = true"
                             @mouseleave="hover_over_more = false">mdi-more</v-icon>
           </v-btn>
@@ -57,7 +62,7 @@ export default {
     hover_over_account: false,
     hover_over_bell: false,
     hover_over_email: false,
-    hover_over_more: false
+    hover_over_more: false,
   }),
 };
 </script>
