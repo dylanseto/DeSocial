@@ -13,10 +13,10 @@
                             alt="John"
                         >
                     </v-avatar>
-                    <a class="ml-3 black--text">John</a>
+                    <a class="ml-3 black--text">{{name}}</a>
                 </div>
                 <v-spacer class="mt-5"></v-spacer>
-              <span outlined>This is an example post.</span>
+              <span outlined>{{text}}</span>
             <v-bottom-navigation class="elevation-0 mt-8" color="primary">
                 <span class="mt-5 red--text">
                   10h 10m 50s Left
@@ -37,3 +37,9 @@
       </v-banner>
       </v-container>
 </template>
+
+<script>
+export default {
+  props: ['name', 'text'],
+};
+</script>

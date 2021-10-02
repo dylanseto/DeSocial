@@ -46,7 +46,8 @@
                </v-form>
               </div>
             </div>
-            <Post v-for="index in 10" :key="index"></Post>
+            <Post v-for="post in this.posts" :key="post.name" v-bind:name="post.name"
+                                                              v-bind:text="post.text"></Post>
           </v-flex>
           <v-flex xs12 md4 v-else>
                   <v-container class="mt-1 rounded-xl black" >
@@ -91,11 +92,14 @@ export default {
   data: () => ({
     isLoaded: false,
     isInstalled: false,
+    posts: null,
+    testData: 'test',
   }),
   methods: {
     async handleClick() {
       this.isLoaded = false;
       this.isLoaded = await this.initializeClient();
+      this.loadPosts();
     },
     onPost() {
       const result = this.createPost('John', this.social_post_textarea);
@@ -105,6 +109,9 @@ export default {
       }
       // Clear Text area.
       this.$refs.form.reset();
+    },
+    async loadPosts() {
+      this.posts = await this.getPosts();
     },
   },
 };
