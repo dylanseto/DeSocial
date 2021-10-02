@@ -1,6 +1,8 @@
+/* eslint-disable new-parens */
 import * as algosdk from 'algosdk';
 import { LogicSigAccount } from 'algosdk';
 import * as IPFS from 'ipfs';
+import axios from 'axios';
 import * as config from './config/algoConfig';
 import SocialPost from './SocialTypes';
 import { escrowTealAddress, createPostAppID } from '../../contracts/lib/contracts';
@@ -8,13 +10,14 @@ import { escrowTealAddress, createPostAppID } from '../../contracts/lib/contract
 export default {
   data: {
     algodClient: null,
+    algoIndexer: null,
     ipfsClient: null,
   },
   methods: {
     /**
-         * Checks if AlgoSigner Extension is installed.
-         * @returns True if installed. False otherwise.
-         */
+     * Checks if AlgoSigner Extension is installed.
+     * @returns True if installed. False otherwise.
+     */
     isAlgoSignerInstalled() {
       if (typeof AlgoSigner !== 'undefined') {
         return true;
@@ -22,9 +25,9 @@ export default {
       return false;
     },
     /**
-         * Attempts to connect to the Algorand and IPFS Networks.
-         * @returns True if successful. False Otherwise.
-         */
+     * Attempts to connect to the Algorand and IPFS Networks.
+     * @returns True if successful. False Otherwise.
+     */
     async initializeClient() {
       let res = false;
       if (!this.isAlgoSignerInstalled()) {
@@ -56,6 +59,10 @@ export default {
 
       // Creae an IPFS node
       this.ipfsClient = await IPFS.create();
+
+      this.algoIndexer = new algosdk.Indexer(config.token,
+        config.indexerServer,
+        config.indexerPort);
 
       return res;
     },
@@ -145,6 +152,41 @@ export default {
         next = results.next();
       }
       return false;
+    },
+    async getPosts() {
+      const escrowAccount = new Uint8Array(Buffer.from(escrowTealAddress, 'base64')); // Get Lsign Address
+      const lsigAccount = new LogicSigAccount(
+        escrowAccount,
+      );
+      const address = lsigAccount.address();
+      const txnType = 'acfg';
+      const response = await this.algoIndexer.searchForTransactions()
+        .address(address)
+        .txType(txnType).do();
+
+      // eslint-disable-next-line prefer-const
+      let results = [];
+      for (let i = 0, len = response.transactions.length; i < len; i += 1) {
+        const txn = response.transactions[i];
+        console.log(txn['asset-config-transaction'].params.results);
+        const file = this.getPost();
+        results.push(file);
+      }
+      const posts = await Promise.all(results);
+      return posts;
+    },
+    async getPost() {
+      let data = null;
+      try {
+        await axios.get('https://ipfs.io/ipfs/QmXEw5H1EjJvXYQAUPdVuhCoAJf2ffz9nBDZQsFSkNFM2i')
+          .then((res) => {
+            data = res.data;
+          });
+        return data;
+      } catch (error) {
+        console.log(error);
+        return data;
+      }
     },
   },
 };
