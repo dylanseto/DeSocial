@@ -81,14 +81,14 @@
 
 import Post from '../components/Post.vue';
 import Sidebar from '../components/Sidebar.vue';
-import algoSocial from '../js/AlgoSocial';
+import deSocial from '../js/DeSocial';
 
 export default {
   components: {
     Post,
     Sidebar,
   },
-  mixins: [algoSocial],
+  mixins: [deSocial],
   data: () => ({
     isLoaded: false,
     isInstalled: false,
