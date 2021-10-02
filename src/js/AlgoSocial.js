@@ -64,6 +64,8 @@ export default {
         config.indexerServer,
         config.indexerPort);
 
+      this.getPosts();
+
       return res;
     },
     /**
@@ -164,21 +166,19 @@ export default {
         .address(address)
         .txType(txnType).do();
 
-      // eslint-disable-next-line prefer-const
-      let results = [];
+      const results = [];
       for (let i = 0, len = response.transactions.length; i < len; i += 1) {
         const txn = response.transactions[i];
-        console.log(txn['asset-config-transaction'].params.results);
-        const file = this.getPost();
+        const file = this.getPost(txn['asset-config-transaction'].params.url);
         results.push(file);
       }
       const posts = await Promise.all(results);
       return posts;
     },
-    async getPost() {
+    async getPost(url) {
       let data = null;
       try {
-        await axios.get('https://ipfs.io/ipfs/QmXEw5H1EjJvXYQAUPdVuhCoAJf2ffz9nBDZQsFSkNFM2i')
+        await axios.get(url)
           .then((res) => {
             data = res.data;
           });
