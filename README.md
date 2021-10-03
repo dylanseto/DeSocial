@@ -7,23 +7,23 @@ A protocol to create a decentralized Social Media App using IPFS and the Algoran
 
 ## Project setup
 ```
-npm install
+TBD
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+TBD
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+TBD
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+TBD
 ```
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+TBD
