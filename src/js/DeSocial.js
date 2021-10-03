@@ -48,8 +48,7 @@ export default {
       this.algodClient = new algosdk.Algodv2(config.token, config.server, config.port);
 
       await this.algodClient.healthCheck().do()
-        .then((d) => {
-          console.log(JSON.stringify(d));
+        .then(() => {
           res = (res && true);
         })
         .catch((e) => {

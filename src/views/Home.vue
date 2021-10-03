@@ -80,9 +80,7 @@ export default {
       await this.initializeClient();
       await this.loadPosts()
         .then(() => {
-          console.log(this.posts);
           this.isLoaded = true;
-          console.log(this.isLoaded);
         });
     },
     onPost() {
