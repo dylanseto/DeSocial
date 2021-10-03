@@ -2,12 +2,12 @@
       <v-container class="postClass" >
       <v-banner
                 height="auto"
-                width="100%"
                 flat
                 outlined>
+                <div class="myLayout">
                 <v-layout row>
-                    <v-flex xs1 sm1 md1 lg1>
-                      <v-avatar class="ml-3 mt-4">
+                    <v-flex xs1 sm1 md1 lg1 class="avatar">
+                      <v-avatar>
                           <img
                               src="https://cdn.vuetifyjs.com/images/john.jpg"
                               alt="John"
@@ -16,19 +16,19 @@
                     </v-flex>
                     <v-flex xs1 sm11 md11 lg11 :class="{'nameTag_xs': $vuetify.breakpoint.xs,
                                                   'nameTag_sm': $vuetify.breakpoint.sm,
-                                                  'nameTag_md mt-2 3': $vuetify.breakpoint.md,
-                                                  'mt-7': $vuetify.breakpoint.lg}">
-                      <a :class="{'nameText_xs white--text 1': $vuetify.breakpoint.xs,
-                                  'nameText_sm white--text 2': $vuetify.breakpoint.sm,
-                                  'nameText_md white--text 3': $vuetify.breakpoint.md,
-                                  'ml-1 white--text 4': $vuetify.breakpoint.lg,
-                                  'ml-1 white--text 5': $vuetify.breakpoint.xl}">
-                                  {{ name }}</a>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12 class="ml-16">
-                      <span class="postText white--text" outlined>{{text}}</span>
+                                                  'nameTag_md': $vuetify.breakpoint.md,
+                                                  'nameTag_lg': $vuetify.breakpoint.lg}">
+                      <v-layout row>
+                        <v-flex xs12 sm12 md12 lg12>
+                          <a class="white--text"> {{ name }}</a>
+                        </v-flex>
+                        <v-flex xs12 sm12 md12 lg12>
+                          <span class="postText white--text" outlined>{{text}}</span>
+                        </v-flex>
+                      </v-layout>
                     </v-flex>
                 </v-layout>
+                </div>
             <v-bottom-navigation justify="left" class="bottomPost elevation-0 mt-8 black">
                 <span class="mt-5 red--text">
                   10h 10m 50s Left
@@ -52,47 +52,54 @@
 
 <style>
 
+.myLayout {
+  margin-left: 1em;
+  margin-top: 1em;
+}
 .content {
   justify-content: left;
-  height: 100%;
+  height: 200px;
   width: 100%;
 }
 
 .avatar {
-  height: 100px;
-  width: 50px;
-  margin-right: 0px;
-  padding-right: 0px;
+  height: 100px !important;
 }
 
 .nameText_xs {
-  margin-left: 250%;
+  margin-left: 100em;
 }
 
 .nameText_sm {
-  margin-left: 6%;
+  margin-left: 13em;
 }
 
 .nameText_md {
-  margin-left: 100%;
+  margin-left: 5%;
 }
 
 .nameTag_xs {
-  padding-top:12%;
-  margin-right: 0%;
+  padding-top: 1em;
+  margin-left: 3.5em;
   justify-content: left;
 }
 
 .nameTag_sm {
-  padding-top:5%;
+  padding-top:1em;
+  padding-left:3em;
 }
 
 .nameTag_md {
-  padding-top:3%;
+  padding-top:1em;
+  padding-left:2em;
+}
+.nameTag_lg {
+  padding-top:1em;
+  padding-left:1.5em;
 }
 .postText {
   padding-left: 0%;
-  margin-left: 1.5%;
+  padding-top: 15% !important;
 }
 .postClass {
   border-bottom:1px solid grey !important;
