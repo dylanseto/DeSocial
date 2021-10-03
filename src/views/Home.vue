@@ -26,28 +26,8 @@
           <v-flex md4>
             <v-spacer></v-spacer>
           </v-flex>
-          <v-flex xs12 md4 v-if="isLoaded" >
-            <div class="pl-4">
-              <div class="pl-16">
-                <v-form ref="form"
-                        v-model="form"
-                        class="pl-16 white--text"
-                        style="width: 700px;">
-                  <v-textarea
-                  v-model="social_post_textarea"
-                  label="What's on your mind?"
-                  counter="400"
-                  auto-grow
-                  dark
-                ></v-textarea>
-                <div class="pt-5">
-                  <v-btn @click="onPost()">POST</v-btn>
-                </div>
-               </v-form>
-              </div>
-            </div>
-            <Post v-for="post in this.posts" :key="post.name" v-bind:name="post.name"
-                                                              v-bind:text="post.text"></Post>
+          <v-flex xs12 md4 v-if="isLoaded">
+            <Feed></Feed>
           </v-flex>
           <v-flex xs12 md4 v-else>
                   <v-container class="mt-1 rounded-xl black" >
@@ -79,27 +59,31 @@
 
 <script>
 
-import Post from '../components/Post.vue';
 import Sidebar from '../components/Sidebar.vue';
+import Feed from '../components/Feed.vue';
 import deSocial from '../js/DeSocial';
 
 export default {
   components: {
-    Post,
     Sidebar,
+    Feed,
   },
   mixins: [deSocial],
   data: () => ({
     isLoaded: false,
     isInstalled: false,
     posts: null,
-    testData: 'test',
   }),
   methods: {
     async handleClick() {
       this.isLoaded = false;
-      this.isLoaded = await this.initializeClient();
-      this.loadPosts();
+      await this.initializeClient();
+      await this.loadPosts()
+        .then(() => {
+          console.log(this.posts);
+          this.isLoaded = true;
+          console.log(this.isLoaded);
+        });
     },
     onPost() {
       const result = this.createPost('John', this.social_post_textarea);
@@ -112,6 +96,8 @@ export default {
     },
     async loadPosts() {
       this.posts = await this.getPosts();
+      await Promise.all(this.posts);
+      return this.posts;
     },
   },
 };
