@@ -3,6 +3,7 @@
       app
       color = "black"
       flat
+      class="topBar"
     >
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
@@ -17,3 +18,9 @@
       </div>
     </v-app-bar>
 </template>
+
+<style>
+.topBar {
+  border-bottom: 1px solid grey !important;
+}
+</style>

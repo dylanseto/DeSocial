@@ -24,10 +24,10 @@
       <div v-else>
         <v-layout column>
           <v-flex md4>
-            <v-spacer></v-spacer>
+            <Feed v-if="isLoaded && isRegistered"></Feed>
           </v-flex>
-          <v-flex xs12 md4 v-if="isLoaded">
-            <Feed></Feed>
+          <v-flex xs12 md4 v-if="isLoaded && !isRegistered">
+            <Register></Register>
           </v-flex>
           <v-flex xs12 md4 v-else>
                   <v-container class="mt-1 rounded-xl black" >
@@ -51,7 +51,7 @@
           </v-banner>
           </v-container>
           </v-flex>
-          <Sidebar></Sidebar>
+          <Sidebar v-if="!isRegister"></Sidebar>
         </v-layout>
       </div>
     </div>
@@ -61,10 +61,12 @@
 
 import Sidebar from '../components/Sidebar.vue';
 import Feed from '../components/Feed.vue';
+import Register from '../components/Register.vue';
 import deSocial from '../js/DeSocial';
 
 export default {
   components: {
+    Register,
     Sidebar,
     Feed,
   },
@@ -72,7 +74,9 @@ export default {
   data: () => ({
     isLoaded: false,
     isInstalled: false,
+    isRegistered: true,
     posts: null,
+    isRegister: false,
   }),
   methods: {
     async handleClick() {
@@ -82,15 +86,6 @@ export default {
         .then(() => {
           this.isLoaded = true;
         });
-    },
-    onPost() {
-      const result = this.createPost('John', this.social_post_textarea);
-
-      if (!result) {
-        // show error
-      }
-      // Clear Text area.
-      this.$refs.form.reset();
     },
     async loadPosts() {
       this.posts = await this.getPosts();

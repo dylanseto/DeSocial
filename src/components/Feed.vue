@@ -1,11 +1,10 @@
 <template>
     <div>
-        <div class="pl-4">
+        <div class="pb-10 postForm">
             <div class="pl-16">
                 <v-form ref="form"
                         v-model="form"
-                        class="pl-16 white--text"
-                        style="width: 700px;">
+                        class="m_form white--text">
                 <v-textarea
                         v-model="social_post_textarea"
                         label="What's on your mind?"
@@ -19,10 +18,23 @@
                 </v-form>
             </div>
         </div>
-        <Post v-for="post in this.posts" :key="post.name" v-bind:name="post.name"
+        <Post class="pr-4" v-for="post in this.posts" :key="post.name" v-bind:name="post.name"
                                                               v-bind:text="post.text"></Post>
     </div>
 </template>
+
+<style>
+.postForm {
+  border-right:1px solid grey !important;
+  border-bottom:1px solid grey;
+  width: 65%;
+  height: 100%
+}
+
+.m_form {
+  width: 90%;
+}
+</style>
 
 <script>
 
@@ -38,7 +50,7 @@ export default {
     loaded: false,
   }),
   mounted() {
-    this.load();
+    this.loadComponents();
   },
   methods: {
     async loadComponents() {

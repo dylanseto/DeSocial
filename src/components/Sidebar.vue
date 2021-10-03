@@ -1,5 +1,6 @@
 <template>
-<v-navigation-drawer width="70" class ="ml-5 black navigationColor" v-model="drawer" app>
+<div class="navigationColor">
+<v-navigation-drawer width="100" class ="ml-5 sidebar" v-model="drawer" app>
         <div class="mt-5 ml-5">
           <v-img
             alt="Vuetify Logo"
@@ -43,11 +44,14 @@
                             @mouseleave="hover_over_more = false">mdi-more</v-icon>
           </v-btn>
       </v-navigation-drawer>
+      <v-divider></v-divider>
+      </div>
 </template>
 
 <style>
-  .navigationColor {
-    border-color: grey !important;
+  .sidebar {
+    background-color: black !important;
+    border-right:1px solid grey;
   }
 </style>
 
