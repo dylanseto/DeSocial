@@ -2,10 +2,7 @@
     <div>
       <div v-if="!isLoaded" class="pt-16">
         <v-layout>
-          <v-flex xs12 md4>
-            <v-spacer></v-spacer>
-          </v-flex>
-          <v-flex xs12 md4>
+          <v-flex xs12 md12 class="welcome">
             <div>
               <h1 class="white--text">Welcome to VANISH</h1>
             </div>
@@ -56,6 +53,18 @@
       </div>
     </div>
 </template>
+
+<style scoped>
+  .welcome {
+    margin-left: 7rem;
+  }
+  .welcome_sm {
+    margin-left: 25%;
+  }
+  .welcome_lg {
+    margin-left: 38%;
+  }
+</style>
 
 <script>
 

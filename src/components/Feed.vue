@@ -1,6 +1,9 @@
 <template>
     <div>
-        <div class="pb-10 postForm">
+        <div :class="{'post postFormSize_xs':  $vuetify.breakpoint.xs,
+                      'post postFormSize_sm':  $vuetify.breakpoint.sm,
+                      'post postFormSize_md':  $vuetify.breakpoint.md,
+                      'post postFormSize_lg':  $vuetify.breakpoint.lg}">
             <div class="pl-16">
                 <v-form ref="form"
                         v-model="form"
@@ -24,11 +27,21 @@
 </template>
 
 <style>
+.postFormSize_xs {
+  width: 30rem;
+}
+.postFormSize_sm {
+  width: 35rem;
+}
+.postFormSize_md {
+  width: 40rem;
+}
+.postFormSize_lg {
+  width: 50rem;
+}
 .postForm {
   border-right:1px solid grey !important;
   border-bottom:1px solid grey;
-  width: 65%;
-  height: 100%
 }
 
 .m_form {
