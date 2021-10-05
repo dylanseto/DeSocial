@@ -29,15 +29,19 @@
 <style>
 .postFormSize_xs {
   width: 30rem;
+  height: 15rem;
 }
 .postFormSize_sm {
   width: 35rem;
+  height: 15rem;
 }
 .postFormSize_md {
   width: 40rem;
+  height: 15rem;
 }
 .postFormSize_lg {
   width: 50rem;
+  height: 15rem;
 }
 .postForm {
   border-right:1px solid grey !important;

@@ -30,22 +30,24 @@
             </v-flex>
           </v-layout>
         </div>
-          <v-bottom-navigation justify="left" class="bottomPost elevation-0 mt-8 black">
-            <span class="mt-5 red--text">
-              10h 10m 50s Left
-            </span>
-            <v-btn elevation="0">
-             <span flat>Add Time</span>
-              <v-icon class="white--text">mdi-plus</v-icon>
-            </v-btn>
-            <v-btn elevation="0">
-              <span flat>Subtract Time</span>
-              <v-icon class="white--text">mdi-minus</v-icon>
-            </v-btn>
-            <v-btn elevation="0">
-              <span flat>React</span>
-              <v-icon class="white--text">mdi-heart</v-icon>
-            </v-btn>
+          <v-bottom-navigation class="bottomPost elevation-0 black">
+            <div :class="{'postInfo_xs':  $vuetify.breakpoint.xs,
+                          'postInfo_sm':  $vuetify.breakpoint.sm,
+                          'postInfo_md':  $vuetify.breakpoint.md,
+                          'postInfo_lg':  $vuetify.breakpoint.lg}">
+              <v-btn elevation="0">
+              <span flat>Add Time</span>
+                <v-icon class="white--text">mdi-plus</v-icon>
+              </v-btn>
+              <v-btn elevation="0">
+                <span flat>Subtract Time</span>
+                <v-icon class="white--text subtractButton">mdi-minus</v-icon>
+              </v-btn>
+              <v-btn elevation="0">
+                <span flat>React</span>
+                <v-icon class="white--text reactButton">mdi-heart</v-icon>
+              </v-btn>
+            </div>
           </v-bottom-navigation>
       </v-banner>
 </template>
@@ -90,6 +92,38 @@
 .nameText {
   font-size:1.2rem;
   font-weight: bold;
+}
+
+.bottomPost {
+  margin-top: 2rem;
+  margin-left: 2.1rem;
+}
+
+.postInfo_xs {
+  margin-right: 0rem;
+  margin-top: 1rem;
+}
+
+.postInfo_sm {
+  margin-right: 5rem;
+  margin-top: 1rem;
+}
+
+.postInfo_md {
+  margin-right: 10rem;
+  margin-top: 1rem;
+}
+
+.postInfo_lg {
+  margin-right: 20rem;
+  margin-top: 1rem;
+}
+
+.subtractButton {
+  margin-right: 10rem;
+}
+.reactButton {
+  margin-right: 25rem;
 }
 </style>
 
