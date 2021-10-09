@@ -67,7 +67,10 @@ export default {
     loaded: false,
   }),
   mounted() {
-    this.loadComponents();
+    if (!this.loaded) {
+      this.loadComponents();
+      this.laoded = true;
+    }
   },
   methods: {
     async loadComponents() {

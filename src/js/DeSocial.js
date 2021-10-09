@@ -4,8 +4,10 @@ import { LogicSigAccount } from 'algosdk';
 import * as IPFS from 'ipfs';
 import axios from 'axios';
 import * as config from './config/algoConfig';
-import SocialPost from './SocialTypes';
-import { escrowTealAddress, createPostAppID } from '../../contracts/lib/contracts';
+import SocialPost from './SocialTypes/SocialPosts';
+import SocialAccount from './SocialTypes/SocialAccount';
+import { escrowTealAddress, createPostAppID } from '../../contracts/lib/contracts_post_config';
+import { createAccountAppID } from '../../contracts/lib/contracts_account_config';
 
 export default {
   data: {
@@ -66,6 +68,35 @@ export default {
       this.getPosts();
 
       return res;
+    },
+    async createAccount(name, email) {
+      const account = new SocialAccount(name, email);
+      if (account instanceof SocialAccount) {
+        const results = await this.ipfsClient.addAll(JSON.stringify(account));
+
+        const next = await results.next();
+        const cid = next.value.path;
+        const url = `https://ipfs.io/ipfs/${cid.toString()}`;
+
+        const createAccountAppTxnParams = await this.algodClient.getTransactionParams().do();
+
+        const createAccountAppTxnargs = [];
+        createAccountAppTxnargs.push(new Uint8Array(Buffer.from('create_account')));
+        createAccountAppTxnargs.push(new Uint8Array(Buffer.from(url)));
+        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
+        const createAccountAppTxn = await algosdk.makeApplicationNoOpTxn(
+          addressBook[0].address,
+          createAccountAppTxnParams,
+          createAccountAppID,
+          createAccountAppTxnargs,
+        );
+
+        const txnB64 = window.AlgoSigner.encoding.msgpackToBase64(createAccountAppTxn.toByte());
+        const signedTx1 = await window.AlgoSigner.signTxn([{ txn: txnB64 }]);
+        const signedTx1Converted = window.AlgoSigner.encoding.base64ToMsgpack(signedTx1[0].blob);
+
+        await this.algodClient.sendRawTransaction(signedTx1Converted).do();
+      }
     },
     /**
          * Uplaods a post to IPFS and submits the link
