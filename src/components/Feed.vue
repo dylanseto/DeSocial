@@ -69,7 +69,7 @@ export default {
   mounted() {
     if (!this.loaded) {
       this.loadComponents();
-      this.laoded = true;
+      this.loaded = true;
     }
   },
   methods: {
