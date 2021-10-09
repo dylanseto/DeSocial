@@ -20,7 +20,7 @@
         <div v-if="page === 2" class="mt-16" transition="fade-transition">
           <h1>What's your email?</h1>
           <v-text-field
-          v-model="name"
+          v-model="email"
           dark
           width=100
           ></v-text-field>
@@ -61,7 +61,14 @@ export default {
       }
     },
     submit() {
-      // TODO - Registration
+      const result = this.$parent.createAccount(this.name, this.email);
+
+      if (!result) {
+        // show error
+      }
+      // Clear Text area.
+      this.$refs.form.reset();
+      this.$parent.isRegistered = true; // Registered
     },
   },
 };

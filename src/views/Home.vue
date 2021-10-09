@@ -20,35 +20,35 @@
       </div>
       <div v-else>
         <v-layout column>
-          <v-flex md4>
-            <Feed v-if="isLoaded && isRegistered"></Feed>
-          </v-flex>
           <v-flex xs12 md4 v-if="isLoaded && !isRegistered">
             <Register></Register>
           </v-flex>
-          <v-flex xs12 md4 v-else>
-                  <v-container class="mt-1 rounded-xl black" >
-          <v-banner elevation="24"
-                    width="500"
-                    height="170"
-                    class="rounded-xl white"
-                    flat
-                    outlined>
-                  <span outlined>
-                    Algosigner Chrome Extension is required to run this application.
-                  </span>
-                  <p></p>
-                  <p></p>
-                  <p></p>
-                  <p>It can be installed
-                    <a href="https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm">
-                    here
-                    </a>
-                  </p>
-          </v-banner>
-          </v-container>
+          <v-flex md4 v-else-if="isLoaded && isRegistered">
+            <Feed></Feed>
           </v-flex>
-          <Sidebar v-if="!isRegister"></Sidebar>
+          <v-flex xs12 md4 v-else>
+            <v-container class="mt-1 rounded-xl black" >
+              <v-banner elevation="24"
+                        width="500"
+                        height="170"
+                        class="rounded-xl white"
+                        flat
+                        outlined>
+                      <span outlined>
+                        Algosigner Chrome Extension is required to run this application.
+                      </span>
+                      <p></p>
+                      <p></p>
+                      <p></p>
+                      <p>It can be installed
+                        <a href="https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm">
+                        here
+                        </a>
+                      </p>
+              </v-banner>
+            </v-container>
+          </v-flex>
+          <Sidebar v-if="isLoaded && isRegistered"></Sidebar>
         </v-layout>
       </div>
     </div>
@@ -83,7 +83,7 @@ export default {
   data: () => ({
     isLoaded: false,
     isInstalled: false,
-    isRegistered: true,
+    isRegistered: false,
     posts: null,
     isRegister: false,
   }),
