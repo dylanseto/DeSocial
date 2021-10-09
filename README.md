@@ -1,9 +1,12 @@
-# AlgoSocial
+[![CodeFactor](https://www.codefactor.io/repository/github/dylanseto/desocial/badge)](https://www.codefactor.io/repository/github/dylanseto/desocial)
 
-A protocol to create a decentralized Social Media App using IPFS and the Algorand Blockchain.
+# DeSocial
+
+A proof of concept decentralized Social Media App using IPFS and the public Algorand Blockchain.
 
 ## Requirements
 - AlgoSigner: https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm
+- NPM: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 
 ## Project setup
 ```
