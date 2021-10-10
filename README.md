@@ -7,6 +7,7 @@ A proof of concept decentralized Social Media App using IPFS and the public Algo
 ## Requirements
 - AlgoSigner: https://chrome.google.com/webstore/detail/algosigner/kmmolakhbgdlpkjkcjkebenjheonagdm
 - NPM: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+- Go: https://golang.org/doc/install
 
 ## Project setup
 ```
