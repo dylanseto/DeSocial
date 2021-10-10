@@ -6,8 +6,8 @@ import axios from 'axios';
 import * as config from './config/algoConfig';
 import SocialPost from './SocialTypes/SocialPosts';
 import SocialAccount from './SocialTypes/SocialAccount';
-import { escrowTealAddress, createPostAppID } from '../../contracts/lib/contracts_post_config';
-import { createAccountAppID } from '../../contracts/lib/contracts_account_config';
+import { escrowTealAddress, createPostAppID } from '../contracts/lib/contracts_post_config';
+import { createAccountAppID } from '../contracts/lib/contracts_account_config';
 
 export default {
   data: {
@@ -78,24 +78,32 @@ export default {
         const cid = next.value.path;
         const url = `https://ipfs.io/ipfs/${cid.toString()}`;
 
+        // Eventually have the user choose which account to register with.
+        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
+
         const createAccountAppTxnParams = await this.algodClient.getTransactionParams().do();
 
         const createAccountAppTxnargs = [];
         createAccountAppTxnargs.push(new Uint8Array(Buffer.from('create_account')));
         createAccountAppTxnargs.push(new Uint8Array(Buffer.from(url)));
-        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
-        const createAccountAppTxn = await algosdk.makeApplicationNoOpTxn(
+        const createAccountAppTxn = await algosdk.makeApplicationOptInTxn(
           addressBook[0].address,
           createAccountAppTxnParams,
           createAccountAppID,
           createAccountAppTxnargs,
         );
+        const createAccounttxnB64 = window.AlgoSigner.encoding.msgpackToBase64(
+          createAccountAppTxn.toByte(),
+        );
+        const signedCreateAccountTx = await window.AlgoSigner.signTxn([
+          { txn: createAccounttxnB64 },
+        ]);
+        const signedCreateAccountTxConverted = window.AlgoSigner.encoding.base64ToMsgpack(
+          signedCreateAccountTx[1].blob,
+        );
 
-        const txnB64 = window.AlgoSigner.encoding.msgpackToBase64(createAccountAppTxn.toByte());
-        const signedTx1 = await window.AlgoSigner.signTxn([{ txn: txnB64 }]);
-        const signedTx1Converted = window.AlgoSigner.encoding.base64ToMsgpack(signedTx1[0].blob);
-
-        await this.algodClient.sendRawTransaction(signedTx1Converted).do();
+        await this.algodClient.sendRawTransaction([
+          signedCreateAccountTxConverted]).do();
       }
     },
     /**

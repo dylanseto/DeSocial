@@ -71,7 +71,7 @@
 import Sidebar from '../components/Sidebar.vue';
 import Feed from '../components/Feed.vue';
 import Register from '../components/Register.vue';
-import deSocial from '../js/DeSocial';
+import deSocial from '../lib/js/DeSocial';
 
 export default {
   components: {

@@ -1,3 +1,3 @@
 [submodule "contracts"]
-	path = contracts
+	path = src/lib/contracts
 	url = https://github.com/dylanseto/AlgoSocial-Contracts.git
