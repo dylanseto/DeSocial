@@ -83,15 +83,9 @@ export default {
   },
   created() {
     const go = new window.Go();
-    console.log(go);
-    console.log('f');
-    WebAssembly.instantiateStreaming(fetch('test.wasm'), go.importObject)
+    WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
       .then((result) => {
-        console.log(result.instance);
         go.run(result.instance);
-      })
-      .catch((err) => {
-        console.log(err);
       });
   },
   mixins: [deSocial],
