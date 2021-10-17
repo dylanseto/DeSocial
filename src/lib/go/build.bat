@@ -1,4 +1,4 @@
-del ./build/*.wasm >nul
+REM del ./build/*.wasm >nul
 
 set GOPATH=C:\Users\Dylan\go
 set GOOS=js

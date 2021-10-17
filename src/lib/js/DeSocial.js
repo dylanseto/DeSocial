@@ -9,6 +9,8 @@ import SocialAccount from './SocialTypes/SocialAccount';
 import { escrowTealAddress, createPostAppID } from '../contracts/lib/contracts_post_config';
 import { createAccountAppID } from '../contracts/lib/contracts_account_config';
 
+require('../../wasm/wasm_exec');
+
 export default {
   data: {
     algodClient: null,
@@ -225,6 +227,16 @@ export default {
         console.log(error);
         return data;
       }
+    },
+    async isAccountRegistered(accountId) {
+      const go = new window.Go();
+      await WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
+        .then((result) => {
+          go.run(result.instance);
+        });
+      const res = await window.isRegistered(accountId);
+
+      return res;
     },
   },
 };

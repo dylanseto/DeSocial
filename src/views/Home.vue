@@ -73,20 +73,11 @@ import Feed from '../components/Feed.vue';
 import Register from '../components/Register.vue';
 import deSocial from '../lib/js/DeSocial';
 
-require('../wasm/wasm_exec');
-
 export default {
   components: {
     Register,
     Sidebar,
     Feed,
-  },
-  created() {
-    const go = new window.Go();
-    WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
-      .then((result) => {
-        go.run(result.instance);
-      });
   },
   mixins: [deSocial],
   data: () => ({

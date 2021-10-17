@@ -3,7 +3,6 @@ module desocial
 go 1.17
 
 require (
-	github.com/aaronpowell/webpack-golang-wasm-async-loader v0.1.0 // indirect
 	github.com/algorand/go-algorand-sdk v1.11.0 // indirect
 	github.com/algorand/go-codec/codec v1.1.7 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
