@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"sync"
 	"syscall/js"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/common"
@@ -13,9 +12,6 @@ const indexerAddress = "https://testnet-algorand.api.purestake.io/idx2"
 const indexerToken = "SxyeYnXjIi7sydMnmi85L8mqXypdroBv1ZdTcBmp"
 const psTokenKey = "X-API-Key"
 const appId = 33467672
-
-var wg sync.WaitGroup       // 1
-var res = make(chan string) // Declare a unbuffered channel
 
 func isRegistered(this js.Value, arg []js.Value) interface{} {
 	accountID := arg[0].String()

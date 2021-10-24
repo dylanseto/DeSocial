@@ -6,6 +6,7 @@ import axios from 'axios';
 import * as config from './config/algoConfig';
 import SocialPost from './SocialTypes/SocialPosts';
 import SocialAccount from './SocialTypes/SocialAccount';
+import AccountList from './SocialTypes/AccountList';
 import { escrowTealAddress, createPostAppID } from '../contracts/lib/contracts_post_config';
 import { createAccountAppID } from '../contracts/lib/contracts_account_config';
 
@@ -16,6 +17,7 @@ export default {
     algodClient: null,
     algoIndexer: null,
     ipfsClient: null,
+    selectedAddresss: null,
   },
   methods: {
     /**
@@ -73,15 +75,12 @@ export default {
     },
     async createAccount(name, email) {
       const account = new SocialAccount(name, email);
-      if (account instanceof SocialAccount) {
+      if (account instanceof SocialAccount && this.selectedAddresss) {
         const results = await this.ipfsClient.addAll(JSON.stringify(account));
 
         const next = await results.next();
         const cid = next.value.path;
         const url = `https://ipfs.io/ipfs/${cid.toString()}`;
-
-        // Eventually have the user choose which account to register with.
-        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
 
         const createAccountAppTxnParams = await this.algodClient.getTransactionParams().do();
 
@@ -89,7 +88,7 @@ export default {
         createAccountAppTxnargs.push(new Uint8Array(Buffer.from('create_account')));
         createAccountAppTxnargs.push(new Uint8Array(Buffer.from(url)));
         const createAccountAppTxn = await algosdk.makeApplicationOptInTxn(
-          addressBook[0].address,
+          this.selectedAddresss,
           createAccountAppTxnParams,
           createAccountAppID,
           createAccountAppTxnargs,
@@ -115,9 +114,7 @@ export default {
     async createPost(name, text) {
       const post = new SocialPost(name, text);
 
-      if (post instanceof SocialPost) {
-        // const data = 'Dylan test data'
-
+      if (post instanceof SocialPost && this.selectedAddresss) {
         // add your data to to IPFS - this can be a string, a Buffer,
         // a stream of Buffers, etc
         const results = await this.ipfsClient.addAll(JSON.stringify(post));
@@ -139,9 +136,8 @@ export default {
 
         const createPostAppTxnargs = [];
         createPostAppTxnargs.push(new Uint8Array(Buffer.from('create_post')));
-        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
         const createPostAppTxn = await algosdk.makeApplicationNoOpTxn(
-          addressBook[0].address,
+          this.selectedAddresss,
           createPostAppTxnParams,
           createPostAppID,
           createPostAppTxnargs,
@@ -228,6 +224,24 @@ export default {
         return data;
       }
     },
+    async getAccountsInfo() {
+      const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
+      const accounts = [];
+      for (let i = 0, len = addressBook.length; i < len; i += 1) {
+        if (addressBook[i].address) {
+          const accountItem = this.getAccountInfo(addressBook[i].address);
+          accounts.push(accountItem);
+        }
+      }
+      const accountsInfo = await Promise.all(accounts);
+
+      return accountsInfo;
+    },
+    async getAccountInfo(address) {
+      const isRegistered = await this.isAccountRegistered(address);
+      const accountInfo = new AccountList('N/A', address, isRegistered);
+      return accountInfo;
+    },
     async isAccountRegistered(accountId) {
       const go = new window.Go();
       await WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
@@ -237,6 +251,9 @@ export default {
       const res = await window.isRegistered(accountId);
 
       return res;
+    },
+    selectAccount(address) {
+      this.selectedAddresss = address;
     },
   },
 };
