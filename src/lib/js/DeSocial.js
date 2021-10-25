@@ -225,22 +225,34 @@ export default {
       }
     },
     async getAccountsInfo() {
-      const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
-      const accounts = [];
-      for (let i = 0, len = addressBook.length; i < len; i += 1) {
-        if (addressBook[i].address) {
-          const accountItem = this.getAccountInfo(addressBook[i].address);
-          accounts.push(accountItem);
+      try {
+        const addressBook = await window.AlgoSigner.accounts({ ledger: 'TestNet' });
+        const accounts = [];
+        for (let i = 0, len = addressBook.length; i < len; i += 1) {
+          if (addressBook[i].address) {
+            const accountItem = this.getAccountInfo(addressBook[i].address);
+            accounts.push(accountItem);
+          }
         }
-      }
-      const accountsInfo = await Promise.all(accounts);
+        const accountsInfo = await Promise.all(accounts);
 
-      return accountsInfo;
+        return accountsInfo;
+      } catch {
+        this.sleep(1000);
+        return this.getAccountsInfo();
+      }
+    },
+    async sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     },
     async getAccountInfo(address) {
-      const isRegistered = await this.isAccountRegistered(address);
-      const accountInfo = new AccountList('N/A', address, isRegistered);
-      return accountInfo;
+      try {
+        const isRegistered = await this.isAccountRegistered(address);
+        const accountInfo = new AccountList('N/A', address, isRegistered);
+        return accountInfo;
+      } catch {
+        return undefined;
+      }
     },
     async isAccountRegistered(accountId) {
       const go = new window.Go();
