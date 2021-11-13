@@ -1,13 +1,12 @@
 /* eslint-disable new-parens */
 import * as algosdk from 'algosdk';
-import { LogicSigAccount } from 'algosdk';
 import * as IPFS from 'ipfs';
 import axios from 'axios';
+import OrbitDB from 'orbit-db';
 import * as config from './config/algoConfig';
 import SocialPost from './SocialTypes/SocialPosts';
 import SocialAccount from './SocialTypes/SocialAccount';
 import AccountList from './SocialTypes/AccountList';
-import { escrowTealAddress, createPostAppID } from '../contracts/lib/contracts_post_config';
 import { createAccountAppID } from '../contracts/lib/contracts_account_config';
 
 require('../../wasm/wasm_exec');
@@ -18,6 +17,7 @@ export default {
     algoIndexer: null,
     ipfsClient: null,
     selectedAddresss: null,
+    postsDatabase: null,
   },
   methods: {
     /**
@@ -69,12 +69,22 @@ export default {
         config.indexerServer,
         config.indexerPort);
 
-      this.getPosts();
-
       return res;
     },
     async createAccount(name, email) {
-      const account = new SocialAccount(name, email);
+      /* TODO: Today, there's no way of signing arbitrary bytes of data
+         with AlgoSigner, it's currently impractical to create a Algorand-based Orbit-DB
+         Identity Provider to verify identity. Currently, it would require local storage of private
+         keys, which is non-ideal.
+         For now, the approach is to create an Orbit-DB database, attach the database hash
+         in JSON data, store it on the Algorand Blockchain.
+      */
+      const orbitdb = await OrbitDB.createInstance(this.ipfsClient);
+      const postsDb = await orbitdb.feed('posts');
+      this.postsDatabase = postsDb.address.toString();
+
+      const account = new SocialAccount(name, email, this.postsDatabase);
+      console.log(account);
       if (account instanceof SocialAccount && this.selectedAddresss) {
         const results = await this.ipfsClient.addAll(JSON.stringify(account));
 
@@ -100,7 +110,7 @@ export default {
           { txn: createAccounttxnB64 },
         ]);
         const signedCreateAccountTxConverted = window.AlgoSigner.encoding.base64ToMsgpack(
-          signedCreateAccountTx[1].blob,
+          signedCreateAccountTx[0].blob,
         );
 
         await this.algodClient.sendRawTransaction([
@@ -108,121 +118,38 @@ export default {
       }
     },
     /**
-         * Uplaods a post to IPFS and submits the link
-         * to the Algorand Blockchain as an NFT
-         */
+      * Uplaods a post to OrbitDB
+      */
     async createPost(name, text) {
       const post = new SocialPost(name, text);
 
       if (post instanceof SocialPost && this.selectedAddresss) {
-        // add your data to to IPFS - this can be a string, a Buffer,
-        // a stream of Buffers, etc
-        const results = await this.ipfsClient.addAll(JSON.stringify(post));
+        const orbitdb = await OrbitDB.createInstance(this.ipfsClient);
+        // TODO: Each User will have their own OrbitDB database.
+        const addr = await OrbitDB.parseAddress('/orbitdb/zdpuAzA1Rqqwrost5tB8pLwasyot93a1an4m7ervV8o1qxmmb/posts');
+        const postsDb = await orbitdb.feed(addr);
 
-        let next = await results.next();
-
-        // we loop over the results because 'add' supports multiple
-        // additions, but we only added one entry here so we only see
-        // one log line in the output
-
-        // CID (Content Identifier) uniquely addresses the data
-        // and can be used to get it again.
-        const cid = next.value.path;
-
-        // The Create Post Smart Contract has three transactions
-        // In a single atomic transfer:
-        // 1. Create Post
-        const createPostAppTxnParams = await this.algodClient.getTransactionParams().do();
-
-        const createPostAppTxnargs = [];
-        createPostAppTxnargs.push(new Uint8Array(Buffer.from('create_post')));
-        const createPostAppTxn = await algosdk.makeApplicationNoOpTxn(
-          this.selectedAddresss,
-          createPostAppTxnParams,
-          createPostAppID,
-          createPostAppTxnargs,
-        );
-
-        const escrowParams = await this.algodClient.getTransactionParams().do();
-        const escrowAccountArgs = [];
-        escrowAccountArgs.push(algosdk.encodeUint64(1));
-        escrowAccountArgs.push(algosdk.encodeUint64(1));
-        escrowAccountArgs.push(algosdk.encodeUint64(1));
-        const escrowAccount = new Uint8Array(Buffer.from(escrowTealAddress, 'base64')); // Get Lsign Address
-        const lsigAddress = new LogicSigAccount(
-          escrowAccount,
-          escrowAccountArgs,
-        );
-
-        const url = `https://ipfs.io/ipfs/${cid.toString()}`;
-        const metadata = new Uint8Array(cid);
-        const createPostTxn = await algosdk.makeAssetCreateTxnWithSuggestedParams(
-          lsigAddress.address(), // Sender
-          undefined, // Note
-          1, // total
-          0, // Decimal
-          false, // Default Frozen
-          lsigAddress.address(), // Manager
-          lsigAddress.address(), // Reserve
-          lsigAddress.address(), // Freeze
-          lsigAddress.address(), // Clawback
-          'asa_post', // Unit Name
-          'asa_post', // Asset Name
-          url, // Asset URL
-          metadata, // Metadata
-          escrowParams, // Parameters
-        );
-        // Group both transactions
-        const group = [createPostAppTxn, createPostTxn];
-        algosdk.assignGroupID(group);
-
-        // Sign Trasactions
-        const txnB64 = window.AlgoSigner.encoding.msgpackToBase64(createPostAppTxn.toByte());
-        const signedTx1 = await window.AlgoSigner.signTxn([{ txn: txnB64 }]);
-        const signedTx1Converted = window.AlgoSigner.encoding.base64ToMsgpack(signedTx1[0].blob);
-        const signedTx2 = algosdk.signLogicSigTransactionObject(createPostTxn, lsigAddress);
-
-        await this.algodClient.sendRawTransaction([signedTx1Converted, signedTx2.blob]).do();
-        // 2. Transfer Post
-        // 3. Freeze Post
-        // Group Transactions
-
-        next = results.next();
+        await postsDb.load();
+        await postsDb.add(post);
+        return true;
       }
+
       return false;
     },
     async getPosts() {
-      const escrowAccount = new Uint8Array(Buffer.from(escrowTealAddress, 'base64')); // Get Lsign Address
-      const lsigAccount = new LogicSigAccount(
-        escrowAccount,
-      );
-      const address = lsigAccount.address();
-      const txnType = 'acfg';
-      const response = await this.algoIndexer.searchForTransactions()
-        .address(address)
-        .txType(txnType).do();
+      const orbitdb = await OrbitDB.createInstance(this.ipfsClient);
+      // TODO: Each User will have their own OrbitDB database.
+      const addr = await OrbitDB.parseAddress('/orbitdb/zdpuAzA1Rqqwrost5tB8pLwasyot93a1an4m7ervV8o1qxmmb/posts');
 
-      const results = [];
-      for (let i = 0, len = response.transactions.length; i < len; i += 1) {
-        const txn = response.transactions[i];
-        const file = this.getPost(txn['asset-config-transaction'].params.url);
-        results.push(file);
-      }
-      const posts = await Promise.all(results);
-      return posts;
-    },
-    async getPost(url) {
-      let data = null;
-      try {
-        await axios.get(url)
-          .then((res) => {
-            data = res.data;
-          });
-        return data;
-      } catch (error) {
-        console.log(error);
-        return data;
-      }
+      const postsDb = await orbitdb.feed(addr);
+      await postsDb.load();
+      const result = postsDb.iterator({
+        limit: 10,
+        reverse: true,
+      })
+        .collect();
+      const mappedValues = result.map((e) => e.payload.value);
+      return mappedValues;
     },
     async getAccountsInfo() {
       try {
@@ -238,7 +165,8 @@ export default {
 
         return accountsInfo;
       } catch {
-        this.sleep(1000);
+        console.log('failed');
+        await this.sleep(1000);
         return this.getAccountsInfo();
       }
     },
@@ -247,22 +175,54 @@ export default {
     },
     async getAccountInfo(address) {
       try {
-        const isRegistered = await this.isAccountRegistered(address);
-        const accountInfo = new AccountList('N/A', address, isRegistered);
+        const accInfoString = await this.isAccountRegistered(address);
+        const accInfo = JSON.parse(accInfoString);
+        let name = 'N/A';
+        if (accInfo.Registered) {
+          const accInfoJson = await this.fetchIPFS(accInfo.Url);
+          try {
+            name = accInfoJson.name;
+          } catch {
+            // fetching the JSON data from IPFS failed,
+            // meaning it was likely garbage collected, use N/A
+            name = 'N/A';
+          }
+        }
+        const accountInfo = new AccountList(name, address, accInfo.Registered);
         return accountInfo;
       } catch {
         return undefined;
       }
     },
+    async fetchIPFS(url) {
+      let data = null;
+      try {
+        await axios.get(url, { timeout: 100 })
+          .then((res) => {
+            data = res.data;
+          })
+          .catch(() => {
+            data = null;
+          });
+        return data;
+      } catch (error) {
+        return data;
+      }
+    },
     async isAccountRegistered(accountId) {
-      const go = new window.Go();
-      await WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
-        .then((result) => {
-          go.run(result.instance);
-        });
-      const res = await window.isRegistered(accountId);
+      try {
+        const go = new window.Go();
+        await WebAssembly.instantiateStreaming(fetch('desocial.wasm'), go.importObject)
+          .then((result) => {
+            go.run(result.instance);
+          });
+        const res = await window.getAccountInfo(accountId);
 
-      return res;
+        return res;
+      } catch {
+        await this.sleep(1000);
+        return this.isAccountRegistered(accountId);
+      }
     },
     selectAccount(address) {
       this.selectedAddresss = address;

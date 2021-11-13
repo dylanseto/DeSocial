@@ -61,7 +61,10 @@ export default {
       }
     },
     submit() {
-      const result = this.$parent.createAccount(this.name, this.email);
+      this.register();
+    },
+    async register() {
+      const result = await this.$parent.createAccount(this.name, this.email);
 
       if (!result) {
         // show error

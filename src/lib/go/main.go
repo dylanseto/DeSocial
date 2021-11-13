@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"syscall/js"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/common"
@@ -11,9 +12,14 @@ import (
 const indexerAddress = "https://testnet-algorand.api.purestake.io/idx2"
 const indexerToken = "SxyeYnXjIi7sydMnmi85L8mqXypdroBv1ZdTcBmp"
 const psTokenKey = "X-API-Key"
-const appId = 33467672
+const appId = 33759957
 
-func isRegistered(this js.Value, arg []js.Value) interface{} {
+type accountInfo struct {
+	Registered bool
+	Url        string
+}
+
+func getAccountInfo(this js.Value, arg []js.Value) interface{} {
 	accountID := arg[0].String()
 
 	handler := js.FuncOf(func(this js.Value, p []js.Value) interface{} {
@@ -32,14 +38,30 @@ func isRegistered(this js.Value, arg []js.Value) interface{} {
 				return
 			}
 
-			registered := false
+			accInfo := accountInfo{false, ""}
+			// registered := false
 			for _, state := range result.AppsLocalState {
-				if state.Id == appId {
-					registered = true
+				if state.Id == appId && state.Deleted == false {
+					accInfo.Registered = true
+					asset := state.KeyValue[0].Value.Uint
+					if accInfo.Registered {
+						_, assetInfo, err := indexerClient.LookupAssetByID(asset).Do(context.Background())
+
+						if err != nil {
+							// Handle error
+							errorConstructor := js.Global().Get("Error")
+							errorObject := errorConstructor.New(err.Error())
+							reject.Invoke(errorObject)
+							return
+						}
+
+						accInfo.Url = assetInfo.Params.Url
+					}
 				}
 			}
 
-			resolve.Invoke(js.ValueOf(registered))
+			e, _ := json.Marshal(accInfo)
+			resolve.Invoke(js.ValueOf(string(e)))
 		}()
 
 		return nil
@@ -51,7 +73,7 @@ func isRegistered(this js.Value, arg []js.Value) interface{} {
 func main() {
 	c := make(chan struct{}, 0)
 
-	js.Global().Set("isRegistered", js.FuncOf(isRegistered))
+	js.Global().Set("getAccountInfo", js.FuncOf(getAccountInfo))
 
 	<-c
 }

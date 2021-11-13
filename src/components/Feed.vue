@@ -21,8 +21,10 @@
                 </v-form>
             </div>
         </div>
-        <Post class="pr-4" v-for="post in this.posts" :key="post.name" v-bind:name="post.name"
-                                                              v-bind:text="post.text"></Post>
+        <Post class="pr-4" v-for="post in this.posts" :key="post.name"
+                                                              v-bind:name="post.name"
+                                                              v-bind:text="post.text">
+        </Post>
     </div>
 </template>
 
@@ -75,9 +77,14 @@ export default {
   methods: {
     async loadComponents() {
       this.posts = await this.$parent.loadPosts();
+      console.log(this.posts);
+    },
+    async addPost() {
+      await this.$parent.createPost('John', this.social_post_textarea);
+      await this.loadComponents();
     },
     onPost() {
-      const result = this.$parent.createPost('John', this.social_post_textarea);
+      const result = this.addPost();
 
       if (!result) {
         // show error
